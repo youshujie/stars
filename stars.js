@@ -1,4 +1,4 @@
-var canvasEl = document.querySelector('#canvas');
+var canvasEl = document.getElementById('canvas');
 var ctx = canvasEl.getContext('2d');
 var mousePos = [0, 0];
 
@@ -10,7 +10,7 @@ var edgeColor = '#fff';
 var nodes = [];
 var edges = [];
 
-window.onresize = function () {
+window.onresize = function() {
     canvasEl.width = document.body.clientWidth;
     canvasEl.height = canvasEl.clientHeight;
 
@@ -19,7 +19,7 @@ window.onresize = function () {
     }
 
     render();
-}
+};
 
 function constructNodes() {
     for (var i = 0; i < 100; i++) {
@@ -29,13 +29,14 @@ function constructNodes() {
             y: Math.random() * canvasEl.height,
             vx: Math.random() * 1 - 0.5,
             vy: Math.random() * 1 - 0.5,
-            radius: Math.random() > 0.9 ? Math.random() * 3 + 3 : Math.random() * 3 + 1
-        }
+            radius: Math.random() > 0.9 ? 3 + Math.random() * 3 : 1 + Math.random() * 3
+        };
+
         nodes.push(node);
     }
 
-    nodes.forEach(function (e) {
-        nodes.forEach(function (e2) {
+    nodes.forEach(function(e) {
+        nodes.forEach(function(e2) {
             if (e == e2) {
                 return;
             }
@@ -53,7 +54,7 @@ function constructNodes() {
 function addEdge(edge) {
     var ignore = false;
 
-    edges.forEach(function (e) {
+    edges.forEach(function(e) {
         if (e.from == edge.from && e.to == edge.to) {
             ignore = true;
         }
@@ -69,7 +70,7 @@ function addEdge(edge) {
 }
 
 function step() {
-    nodes.forEach(function (e) {
+    nodes.forEach(function(e) {
         if (e.drivenByMouse) {
             return;
         }
@@ -81,7 +82,7 @@ function step() {
             if (value > max) {
                 return max;
             } else if (value < min) {
-                return min
+                return min;
             } else {
                 return value;
             }
@@ -89,12 +90,12 @@ function step() {
 
         if (e.x <= 0 || e.x >= canvasEl.width) {
             e.vx *= -1;
-            e.x = clamp(0, canvasEl.width, e.x);
+            e.x = clamp(0, canvasEl.width, e.x)
         }
 
         if (e.y <= 0 || e.y >= canvasEl.height) {
             e.vy *= -1;
-            e.y = clamp(0, canvasEl.height, e.y);
+            e.y = clamp(0, canvasEl.height, e.y)
         }
     });
 
@@ -104,19 +105,19 @@ function step() {
 }
 
 function adjustNodeDrivenByMouse() {
-    nodes[0].x += (mousePos[0].x - nodes[0].x) / easingFactor;
-    nodes[0].y += (mousePos[0].y - nodes[0].y) / easingFactor;
+    nodes[0].x += (mousePos[0] - nodes[0].x) / easingFactor;
+    nodes[0].y += (mousePos[1] - nodes[0].y) / easingFactor;
 }
 
 function lengthOfEdge(edge) {
-  return Math.sqrt(Math.pow((edge.from.x - edge.to.x), 2) + Math.pow((edge.from.y - edge.to.y), 2));
+    return Math.sqrt(Math.pow((edge.from.x - edge.to.x), 2) + Math.pow((edge.from.y - edge.to.y), 2));
 }
 
 function render() {
     ctx.fillStyle = backgroundColor;
     ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
 
-    edges.forEach(function (e) {
+    edges.forEach(function(e) {
         var l = lengthOfEdge(e);
         var threshold = canvasEl.width / 8;
 
@@ -126,16 +127,15 @@ function render() {
 
         ctx.strokeStyle = edgeColor;
         ctx.lineWidth = (1.0 - l / threshold) * 2.5;
-        ctx.globalAlpha = (1.0 - l / threshold);
+        ctx.globalAlpha = 1.0 - l / threshold;
         ctx.beginPath();
         ctx.moveTo(e.from.x, e.from.y);
         ctx.lineTo(e.to.x, e.to.y);
         ctx.stroke();
     });
-
     ctx.globalAlpha = 1.0;
 
-    nodes.forEach(function (e) {
+    nodes.forEach(function(e) {
         if (e.drivenByMouse) {
             return;
         }
@@ -147,26 +147,10 @@ function render() {
     });
 }
 
-// window.onmousemove = function (e) {
-//   mousePos[0] = e.clientX;
-//   mousePos[1] = e.clientY;
-// }
+window.onmousemove = function(e) {
+    mousePos[0] = e.clientX;
+    mousePos[1] = e.clientY;
+}
 
 window.onresize();
 window.requestAnimationFrame(step);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
